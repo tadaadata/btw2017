@@ -32,7 +32,7 @@ btw17 %>%
   geom_col() +
   scale_y_continuous(labels = scales::percent) +
   scale_fill_manual(breaks = names(partei_colors), values = partei_colors) +
-  labs(title = "Stimmanteil aller Parteien") +
+  labs(title = "Stimmanteil aller Parteien", x = "Partei") +
   coord_flip()
 ```
 
