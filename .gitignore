@@ -1,0 +1,7 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+data/btw17_wbz_erststimmen.csv
+data/btw17_wbz_zweitstimmen.csv
+data/btw17_wbz_leitband.csv
