@@ -13,12 +13,23 @@ source("dataprep.R")
 
 
 ```{r bars_by_state}
+partei_colors <- c(
+  AfD = "lightblue",
+  CDU = "black",
+  CSU = "blue",
+  `DIE LINKE` = "purple",
+  FDP = "yellow",
+  `GRÜNE` = "green",
+  Sonstige = "gray",
+  SPD = "red"
+  )
+
 # first Plot attempt
 btw_long %>%
   ggplot(aes(x = reorder(Parteien, Prozent), y = Prozent, fill = Parteien)) +
   geom_col() +
-  scale_fill_brewer(palette = "Set1") +
   scale_y_continuous(labels = scales::percent) +
+  scale_fill_manual(values = partei_colors) +
   labs(title = "Stimmanteil aller Parteien >5% pro Bundesland") +
   facet_wrap(~Laendernamen) +
   coord_flip()
