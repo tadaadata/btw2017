@@ -40,3 +40,15 @@ btw_long <- btw17 %>%
   mutate(Parteien = ifelse(Prozent <= .05, "Sonstige", Partei)) %>%
   ungroup()
 
+
+# Color scheme for parties ----
+partei_colors <- c(
+  CDU = "black",
+  CSU = "blue",
+  SPD = "red",
+  AfD = "lightblue",
+  `DIE LINKE` = "purple",
+  `GRÜNE` = "green",
+  FDP = "yellow",
+  Sonstige = "gray"
+)
