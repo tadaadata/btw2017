@@ -43,12 +43,12 @@ btw_long <- btw17 %>%
 
 # Color scheme for parties ----
 partei_colors <- c(
-  CDU = "black",
-  CSU = "blue",
-  SPD = "red",
-  AfD = "lightblue",
-  `DIE LINKE` = "purple",
-  `GRÜNE` = "green",
-  FDP = "yellow",
-  Sonstige = "gray"
+  CDU = "#262626",
+  CSU = "#0000e6",
+  SPD = "#ff0000",
+  AfD = "#00ccff",
+  `DIE LINKE` = "#990099",
+  `GRÜNE` = "#39e600",
+  FDP = "#ffff1a",
+  Sonstige = "#999966"
 )
