@@ -40,13 +40,3 @@ btw_long <- btw17 %>%
   mutate(Parteien = ifelse(Prozent <= .05, "Sonstige", Partei)) %>%
   ungroup()
 
-
-# first Plot attempt
-btw_long %>%
-  ggplot(aes(x = reorder(Parteien, Prozent), y = Prozent, fill = Parteien)) +
-  geom_col() +
-  scale_fill_brewer(palette = "Set1") +
-  scale_y_continuous(labels = scales::percent) +
-  labs(title = "Stimmanteil aller Parteien >5% pro Bundesland") +
-  facet_wrap(~Laendernamen) +
-  coord_flip()
