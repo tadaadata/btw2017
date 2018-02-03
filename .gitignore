@@ -6,3 +6,8 @@
 # Ignore data files
 data/*\.csv
 data/*\.pdf
+
+# Rendered files
+plots
+*\.html
+*_files
