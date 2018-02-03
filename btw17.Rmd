@@ -28,12 +28,11 @@ btw17 %>%
   group_by(Partei) %>%
   summarise(Prozent = sum(Stimmen) / sum(`Gültige`)) %>%
   mutate(Parteien = ifelse(Prozent <= .05, "Sonstige", Partei)) %>% 
-  ggplot(aes(x = reorder(Parteien, Prozent), y = Prozent, fill = Parteien)) +
+  ggplot(aes(x = reorder(Parteien, -Prozent), y = Prozent, fill = Parteien)) +
   geom_col() +
   scale_y_continuous(labels = scales::percent) +
-  scale_fill_manual(breaks = names(partei_colors), values = partei_colors) +
-  labs(title = "Stimmanteil aller Parteien", x = "Partei") +
-  coord_flip()
+  scale_fill_manual(guide = FALSE, values = partei_colors) +
+  labs(title = "Stimmanteil aller Parteien bundesweit", x = "Partei", y = "Stimmanteil")
 ```
 
 
