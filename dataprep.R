@@ -25,12 +25,14 @@ num2name <- function(x = nummer){
   laender$Name[laender$Land == x]
 }
 
-# aggregate data
-btw_long <- btw17 %>%
+btw17 <- btw17 %>%
   mutate(
     # map_chr() runs num2name on every entry of btw17$Land
     Laendernamen = map_chr(Land, num2name)
-  ) %>%
+  )
+
+# aggregate data
+btw_long <- btw17 %>%
   select(Laendernamen, `Wahlberechtigte (A)`, `Wähler (B)`, `Ungültige`:`Übrige`) %>%
   gather(key = Partei, value = Stimmen, CDU:`Übrige`) %>%
   group_by(Laendernamen, Partei) %>%
