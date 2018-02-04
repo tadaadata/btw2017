@@ -3,6 +3,7 @@ library(dplyr)
 library(purrr)
 library(tidyr)
 library(ggplot2)
+library(leaflet)
 
 # read data:
 # skip first 4 lines, set encoding, define delimiter
@@ -30,6 +31,14 @@ btw17 <- btw17 %>%
     # map_chr() runs num2name on every entry of btw17$Land
     Laendernamen = map_chr(Land, num2name)
   )
+
+# Voter turnout by states
+turnout <- btw17 %>%
+  group_by(Laendernamen) %>%
+  summarise(
+    Prozent = sum(`Wähler (B)`) / sum(`Wahlberechtigte (A)`)
+  ) %>%
+  ungroup()
 
 # aggregate data
 btw_long <- btw17 %>%
