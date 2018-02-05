@@ -7,6 +7,9 @@
 data/*\.csv
 data/*\.pdf
 
+maps/*\.rds
+maps/*\bwl_shapefile
+
 # Rendered files
 plots
 *\.html
