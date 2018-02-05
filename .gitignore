@@ -10,9 +10,10 @@ data/*\.rds
 
 maps/*\.zip
 maps/*\.rds
-maps/*\bwl_shapefile
+maps/bwl_shapefile
 
 # Rendered files
-plots
+assets/plots
+assets/js
 *\.html
 *_files
