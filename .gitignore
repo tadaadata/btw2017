@@ -13,6 +13,7 @@ maps/*\.rds
 maps/bwl_shapefile
 
 # Rendered files
+site_libs
 assets/plots
 assets/js
 *\.html

@@ -1,12 +1,6 @@
 ---
-title: "BTW 2017"
-author: "People"
 date: "`r Sys.time()`"
-output: 
-  html_document: 
-    self_contained: no
-    toc: yes
-    lib_dir: assets/js
+output: html_document
 editor_options: 
   chunk_output_type: console
 ---
@@ -19,42 +13,11 @@ source("init.R")
 theme_set(tadaatoolbox::theme_tadaa())
 ```
 
-## Distribution
-
-```{r distribution}
-btw17 %>%
-  select(Laendernamen, `Wahlberechtigte (A)`, `Wähler (B)`, `Ungültige`:`Übrige`) %>%
-  gather(key = Partei, value = Stimmen, CDU:`Übrige`) %>%
-  group_by(Partei) %>%
-  summarise(Prozent = sum(Stimmen) / sum(`Gültige`)) %>%
-  mutate(Parteien = ifelse(Prozent <= .05, "Sonstige", Partei)) %>% 
-  ggplot(aes(x = reorder(Parteien, -Prozent), y = Prozent, fill = Parteien)) +
-  geom_col() +
-  scale_y_continuous(labels = scales::percent) +
-  scale_fill_manual(guide = FALSE, values = partei_colors) +
-  labs(title = "Stimmanteil aller Parteien bundesweit", x = "Partei", y = "Stimmanteil")
-```
-
-
-### Distribution by State
-
-```{r distribution_by_state}
-btw_long %>%
-  ggplot(aes(x = reorder(Parteien, Prozent), y = Prozent, fill = Parteien)) +
-  geom_col() +
-  scale_y_continuous(labels = scales::percent) +
-  scale_fill_manual(breaks = names(partei_colors), values = partei_colors) +
-  labs(title = "Stimmanteil aller Parteien >5% pro Bundesland") +
-  facet_wrap(~Laendernamen) +
-  coord_flip()
-```
-
-
 ## Voter Turnout 
 
 ### by State
 
-```{r}
+```{r voter_tunrout_state_map}
 # create labels and color palette
 labels1 <- paste0(
   laender$NAME_1, ": ", round(laender$Prozent * 100, 1), "%"
@@ -76,7 +39,7 @@ leaflet(laender) %>%
 
 ### by Voting District
 
-```{r}
+```{r voter_tunrout_districts_map}
 kreise$Wahlbeteiligung <- turnout_dist$Prozent
 
 pal2 <- colorBin("plasma", domain = kreise$Wahlbeteiligung, reverse = TRUE)
@@ -94,5 +57,4 @@ leaflet(kreise) %>%
                                            bringToFront = TRUE)) %>%
   addLegend(pal = pal2, values = ~Wahlbeteiligung, opacity = 0.7, title = NULL, labels = "",
             position = "topright", labFormat = labelFormat(suffix = "%", digits = 2))
-
 ```

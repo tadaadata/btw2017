@@ -1,0 +1,34 @@
+name: "BTW17"
+output_dir: "."
+navbar:
+  title: "BTW17"
+  left:
+    - text: "Data"
+      icon: fa-info
+      href: index.html
+    - text: "Maps"
+      icon: fa-map
+      href: maps.html
+  right:
+    - text: "Tadaa, Data!"
+      icon: fa-star
+      href: "https://tadaa-data.de"
+    - text: "@tadaa_data"
+      icon: fa-twitter
+      href: https://twitter.com/tadaa_data
+    - text: "Source"
+      icon: fa-github
+      href: https://github.com/tadaadata/btw2017
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    highlight: tango
+    fig_width: 9
+    fig_height: 6
+    theme: flatly
+    code_folding: hide
+    self_contained: no
+    include:
+      in_header: "html_includes/piwik.html"
+      after_body: "html_includes/footer.html"

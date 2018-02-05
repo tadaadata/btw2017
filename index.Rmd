@@ -1,0 +1,44 @@
+---
+date: "`r Sys.time()`"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.path = "assets/plots/")
+
+source("init.R")
+
+theme_set(tadaatoolbox::theme_tadaa())
+```
+
+## Distribution
+
+```{r distribution}
+btw17 %>%
+  select(Laendernamen, `Wahlberechtigte (A)`, `Wähler (B)`, `Ungültige`:`Übrige`) %>%
+  gather(key = Partei, value = Stimmen, CDU:`Übrige`) %>%
+  group_by(Partei) %>%
+  summarise(Prozent = sum(Stimmen) / sum(`Gültige`)) %>%
+  mutate(Parteien = ifelse(Prozent <= .05, "Sonstige", Partei)) %>% 
+  ggplot(aes(x = reorder(Parteien, -Prozent), y = Prozent, fill = Parteien)) +
+  geom_col() +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_manual(guide = FALSE, values = partei_colors) +
+  labs(title = "Stimmanteil aller Parteien bundesweit", x = "Partei", y = "Stimmanteil")
+```
+
+
+### Distribution by State
+
+```{r distribution_by_state}
+btw_long %>%
+  ggplot(aes(x = reorder(Parteien, Prozent), y = Prozent, fill = Parteien)) +
+  geom_col() +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_manual(breaks = names(partei_colors), values = partei_colors) +
+  labs(title = "Stimmanteil aller Parteien >5% pro Bundesland") +
+  facet_wrap(~Laendernamen) +
+  coord_flip()
+```
