@@ -8,6 +8,7 @@ data/*\.csv
 data/*\.pdf
 data/*\.rds
 
+maps/*\.zip
 maps/*\.rds
 maps/*\bwl_shapefile
 
