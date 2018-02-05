@@ -2,10 +2,10 @@ library(readr)
 library(dplyr)
 library(purrr)
 library(tidyr)
-library(ggplot2)
-library(leaflet)
+library(rgdal)
 
-# read data:
+
+#### read data ####
 # skip first 4 lines, set encoding, define delimiter
 btw17 <- read_delim("data/btw17_wbz_erststimmen.csv",
                     ";", escape_double = FALSE, locale = locale(encoding = "CP1252"),
@@ -32,15 +32,8 @@ btw17 <- btw17 %>%
     Laendernamen = map_chr(Land, num2name)
   )
 
-# Voter turnout by states
-turnout <- btw17 %>%
-  group_by(Laendernamen) %>%
-  summarise(
-    Prozent = sum(`Wähler (B)`) / sum(`Wahlberechtigte (A)`)
-  ) %>%
-  ungroup()
 
-# aggregate data
+#### aggregate data ####
 btw_long <- btw17 %>%
   select(Laendernamen, `Wahlberechtigte (A)`, `Wähler (B)`, `Ungültige`:`Übrige`) %>%
   gather(key = Partei, value = Stimmen, CDU:`Übrige`) %>%
@@ -52,14 +45,40 @@ btw_long <- btw17 %>%
   ungroup()
 
 
-# Color scheme for parties ----
-partei_colors <- c(
-  CDU = "#262626",
-  CSU = "#0000e6",
-  SPD = "#ff0000",
-  AfD = "#00ccff",
-  `DIE LINKE` = "#990099",
-  `GRÜNE` = "#39e600",
-  FDP = "#ffff1a",
-  Sonstige = "#999966"
-)
+# Voter turnout by states
+turnout_states <- btw17 %>%
+  group_by(Laendernamen) %>%
+  summarise(
+    Prozent = sum(`Wähler (B)`) / sum(`Wahlberechtigte (A)`)
+  ) %>%
+  ungroup()
+
+turnout_dist <- btw17 %>%
+  group_by(Wahlkreis) %>%
+  summarise(
+    Prozent = sum(`Wähler (B)`) / sum(`Wahlberechtigte (A)`)
+  ) %>%
+  ungroup()
+
+
+#### read map(s) ####
+# Voter Districts
+map <- readOGR(dsn   = "./maps/bwl_shapefile",
+               layer = "Geometrie_Wahlkreise_19DBT_geo",
+               stringsAsFactors = FALSE)
+
+# Federal States
+ger <- readRDS("./maps/DEU_adm1.rds")
+ger$Prozent <- turnout_states$Prozent
+
+
+#### write data & maps ####
+saveRDS(btw17, "./data/btw17.rds")
+saveRDS(btw_long, "./data/btw_long.rds")
+saveRDS(turnout_states, "./data/turnout_states.rds")
+saveRDS(turnout_dist, "./data/turnout_dist.rds")
+
+saveRDS(map, "./maps/Wahlkreise.rds")
+saveRDS(ger, "./maps/Bundeslaender.rds")
+rm(laender, leitband)
+
