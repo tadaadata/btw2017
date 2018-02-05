@@ -13,7 +13,7 @@ editor_options:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, fig.path = "plots/")
 
-source("dataprep.R")
+source("init.R")
 
 theme_set(tadaatoolbox::theme_tadaa())
 ```
@@ -22,7 +22,6 @@ theme_set(tadaatoolbox::theme_tadaa())
 
 ```{r distribution}
 btw17 %>%
-  mutate(Laendernamen = map_chr(Land, num2name)) %>%
   select(Laendernamen, `Wahlberechtigte (A)`, `Wähler (B)`, `Ungültige`:`Übrige`) %>%
   gather(key = Partei, value = Stimmen, CDU:`Übrige`) %>%
   group_by(Partei) %>%
@@ -53,25 +52,21 @@ btw_long %>%
 ## Voter Turnout By State
 
 ```{r}
-# get map & add turnout
-ger <- readRDS(url("http://biogeo.ucdavis.edu/data/gadm2.8/rds/DEU_adm1.rds"))
-ger$Prozent <- turnout$Prozent
-
 # create labels and color palette
 labels <- paste0(
-  ger$NAME_1, ": ", round(ger$Prozent * 100, 1), "%"
+  laender$NAME_1, ": ", round(laender$Prozent * 100, 1), "%"
 ) %>% lapply(htmltools::HTML)
 
-pal <- colorBin("YlGnBu", domain = turnout$Prozent)
+pal <- colorBin("YlGnBu", domain = laender$Prozent)
 
 # create map
-leaflet(ger) %>%
+leaflet(laender) %>%
   addProviderTiles(providers$Esri) %>% # oder $Stamen.TonerLite
   addPolygons(weight = 2, color = "black", fillColor = ~pal(Prozent),
               dashArray = "4", fillOpacity = 0.5, label = labels,
               highlightOptions = highlightOptions(weight = 3, color = "#800000",
-                                           dashArray = "", fillOpacity = .8,
-                                           bringToFront = TRUE)) %>%
+                                                  dashArray = "", fillOpacity = .8,
+                                                  bringToFront = TRUE)) %>%
   addLegend(pal = pal, values = ~Prozent, opacity = 0.7, title = NULL, labels = "",
             position = "topright", labFormat = labelFormat(suffix = "%", digits = 2))
 ```
