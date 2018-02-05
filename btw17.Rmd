@@ -60,7 +60,7 @@ labels1 <- paste0(
   laender$NAME_1, ": ", round(laender$Prozent * 100, 1), "%"
 ) %>% lapply(htmltools::HTML)
 
-pal1 <- colorBin("YlGnBu", domain = laender$Prozent)
+pal1 <- colorBin("plasma", domain = laender$Prozent, reverse = TRUE)
 
 # create map
 leaflet(laender) %>%
@@ -79,21 +79,20 @@ leaflet(laender) %>%
 ```{r}
 kreise$Wahlbeteiligung <- turnout_dist$Prozent
 
-pal2 <- colorBin("YlGnBu", domain = kreise$Wahlbeteiligung)
+pal2 <- colorBin("plasma", domain = kreise$Wahlbeteiligung, reverse = TRUE)
 
 labels2 <- paste0(
   kreise$WKR_NAME, ": ", round(kreise$Wahlbeteiligung * 100, 1), "%"
 ) %>% lapply(htmltools::HTML)
 
-suppressWarnings( # because laziness
-  leaflet(kreise) %>%
-    addProviderTiles(providers$Stamen.TonerLite) %>% # oder $Esri
-    addPolygons(weight = 1, color = "black", fillColor = ~pal2(Wahlbeteiligung),
-                dashArray = "4", fillOpacity = 0.4, label = labels2,
-                highlight = highlightOptions(weight = 3, color = "#800000",
-                                             dashArray = "", fillOpacity = .8,
-                                             bringToFront = TRUE)) %>%
-    addLegend(pal = pal2, values = ~Wahlbeteiligung, opacity = 0.7, title = NULL,
-              position = "topright", labFormat = labelFormat(suffix = "%", digits = 2))
-)
+leaflet(kreise) %>%
+  addProviderTiles(providers$Stamen.TonerLite) %>% # oder $Esri
+  addPolygons(weight = 1, color = "black", fillColor = ~pal2(Wahlbeteiligung),
+              dashArray = "4", fillOpacity = 0.4, label = labels2,
+              highlightOptions = highlightOptions(weight = 3, color = "#800000",
+                                           dashArray = "", fillOpacity = .8,
+                                           bringToFront = TRUE)) %>%
+  addLegend(pal = pal2, values = ~Wahlbeteiligung, opacity = 0.7, title = NULL, labels = "",
+            position = "topright", labFormat = labelFormat(suffix = "%", digits = 2))
+
 ```
