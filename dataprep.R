@@ -1,7 +1,10 @@
 library(readr)
 library(dplyr)
 library(purrr)
+library(stringr)
 library(tidyr)
+library(broom)
+# library(fs)
 library(rgdal)
 
 
@@ -11,7 +14,7 @@ btw17 <- read_delim("data/btw17_wbz_erststimmen.csv",
                     ";", escape_double = FALSE, locale = locale(encoding = "CP1252"),
                     trim_ws = TRUE, skip = 4) %>%
   mutate(
-    Land = as.integer(Land)
+    Bundesland = as.integer(Land)
   )
 
 # same with data containing all labels
@@ -29,34 +32,38 @@ num2name <- function(x = nummer){
 btw17 <- btw17 %>%
   mutate(
     # map_chr() runs num2name on every entry of btw17$Land
-    Laendernamen = map_chr(Land, num2name)
+    Bundesland = map_chr(Bundesland, num2name)
   )
 
 
 #### aggregate data ####
 btw_long <- btw17 %>%
-  select(Laendernamen, `Wahlberechtigte (A)`, `Wähler (B)`, `Ungültige`:`Übrige`) %>%
+  select(Bundesland, `Wahlberechtigte (A)`, `Wähler (B)`, `Ungültige`:`Übrige`) %>%
   gather(key = Partei, value = Stimmen, CDU:`Übrige`) %>%
-  group_by(Laendernamen, Partei) %>%
+  group_by(Bundesland, Partei) %>%
   summarise(
     Prozent = sum(Stimmen) / sum(`Gültige`)
   ) %>%
   mutate(Parteien = ifelse(Prozent <= .05, "Sonstige", Partei)) %>%
+  ungroup() %>%
+  group_by(Bundesland, Parteien) %>%
+  summarise(
+    Prozent = sum(Prozent, na.rm = T)
+  ) %>%
   ungroup()
-
 
 # Voter turnout by states
 turnout_states <- btw17 %>%
-  group_by(Laendernamen) %>%
+  group_by(Bundesland) %>%
   summarise(
-    Prozent = sum(`Wähler (B)`) / sum(`Wahlberechtigte (A)`)
+    Wahlbeteiligung = sum(`Wähler (B)`) / sum(`Wahlberechtigte (A)`)
   ) %>%
   ungroup()
 
 turnout_dist <- btw17 %>%
   group_by(Wahlkreis) %>%
   summarise(
-    Prozent = sum(`Wähler (B)`) / sum(`Wahlberechtigte (A)`)
+    Wahlbeteiligung = sum(`Wähler (B)`) / sum(`Wahlberechtigte (A)`)
   ) %>%
   ungroup()
 
@@ -69,7 +76,7 @@ map <- readOGR(dsn   = "./maps/bwl_shapefile",
 
 # Federal States
 ger <- readRDS("./maps/DEU_adm1.rds")
-ger$Prozent <- turnout_states$Prozent
+ger$Wahlbeteiligung <- turnout_states$Wahlbeteiligung
 
 
 #### write data & maps ####
