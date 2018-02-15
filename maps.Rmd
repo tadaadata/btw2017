@@ -40,7 +40,7 @@ leaflet(laender) %>%
 ### by Voting District
 
 ```{r voter_tunrout_districts_map}
-kreise$Wahlbeteiligung <- turnout_dist$Prozent
+kreise$Wahlbeteiligung <- turnout_dist$Wahlbeteiligung
 
 pal2 <- colorBin("plasma", domain = kreise$Wahlbeteiligung, reverse = TRUE)
 
