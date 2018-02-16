@@ -10,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE, fig.path = "assets/plots/")
 
 source("init.R")
 
-theme_set(tadaatoolbox::theme_tadaa())
+theme_set(tadaatoolbox::theme_tadaa(bg = "#ffffff"))
 ```
 
 ## Voter Turnout 
@@ -20,20 +20,20 @@ theme_set(tadaatoolbox::theme_tadaa())
 ```{r voter_tunrout_state_map}
 # create labels and color palette
 labels1 <- paste0(
-  laender$NAME_1, ": ", round(laender$Prozent * 100, 1), "%"
+  laender$NAME_1, ": ", round(laender$Wahlbeteiligung * 100, 1), "%"
 ) %>% lapply(htmltools::HTML)
 
-pal1 <- colorBin("plasma", domain = laender$Prozent, reverse = TRUE)
+pal1 <- colorBin("plasma", domain = laender$Wahlbeteiligung, reverse = TRUE)
 
 # create map
 leaflet(laender) %>%
   addProviderTiles(providers$Esri) %>% # oder $Stamen.TonerLite
-  addPolygons(weight = 2, color = "black", fillColor = ~pal1(Prozent),
+  addPolygons(weight = 2, color = "black", fillColor = ~pal1(Wahlbeteiligung),
               dashArray = "4", fillOpacity = 0.5, label = labels1,
               highlightOptions = highlightOptions(weight = 3, color = "#800000",
                                                   dashArray = "", fillOpacity = .8,
                                                   bringToFront = TRUE)) %>%
-  addLegend(pal = pal1, values = ~Prozent, opacity = 0.7, title = NULL, labels = "",
+  addLegend(pal = pal1, values = ~Wahlbeteiligung, opacity = 0.7, title = NULL, labels = "",
             position = "topright", labFormat = labelFormat(suffix = "%", digits = 2))
 ```
 

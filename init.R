@@ -4,8 +4,8 @@ library(ggplot2)
 library(leaflet)
 
 #### read data & maps ####
-btw17    <- readRDS("./data/btw17.rds")
-btw_long <- readRDS("./data/btw_long.rds")
+btw17    <- readRDS("./data/zweitstimmen.rds")
+btw_long <- readRDS("./data/zweitstimmen_long.rds")
 turnout_dist   <- readRDS("./data/turnout_dist.rds")
 turnout_states <- readRDS("./data/turnout_states.rds")
 

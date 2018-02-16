@@ -10,15 +10,15 @@ knitr::opts_chunk$set(echo = TRUE, fig.path = "assets/plots/")
 
 source("init.R")
 
-theme_set(tadaatoolbox::theme_tadaa())
+theme_set(tadaatoolbox::theme_tadaa(bg = "#ffffff"))
 ```
 
 ## Distribution
 
 ```{r distribution}
 btw17 %>%
-  select(Laendernamen, `Wahlberechtigte (A)`, `Wähler (B)`, `Ungültige`:`Übrige`) %>%
-  gather(key = Partei, value = Stimmen, CDU:`Übrige`) %>%
+  select(Bundesland, `Wahlberechtigte (A)`, `Wähler (B)`, `Ungültige`:`V-Partei³`) %>%
+  gather(key = Partei, value = Stimmen, CDU:`V-Partei³`) %>%
   group_by(Partei) %>%
   summarise(Prozent = sum(Stimmen) / sum(`Gültige`)) %>%
   mutate(Parteien = ifelse(Prozent <= .05, "Sonstige", Partei)) %>% 
@@ -39,6 +39,6 @@ btw_long %>%
   scale_y_continuous(labels = scales::percent) +
   scale_fill_manual(breaks = names(partei_colors), values = partei_colors) +
   labs(title = "Stimmanteil aller Parteien >5% pro Bundesland") +
-  facet_wrap(~Laendernamen) +
+  facet_wrap(~ Bundesland) +
   coord_flip()
 ```
