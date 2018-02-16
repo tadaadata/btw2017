@@ -10,7 +10,16 @@ library(rgdal)
 
 #### read data ####
 # skip first 4 lines, set encoding, define delimiter
-btw17 <- read_delim("data/btw17_wbz_erststimmen.csv",
+# Erststimmen
+erst <- read_delim("data/btw17_wbz_erststimmen.csv",
+                    ";", escape_double = FALSE, locale = locale(encoding = "CP1252"),
+                    trim_ws = TRUE, skip = 4) %>%
+  mutate(
+    Bundesland = as.integer(Land)
+  )
+
+# Zweitstimmen
+zweit <- read_delim("data/btw17_wbz_zweitstimmen.csv",
                     ";", escape_double = FALSE, locale = locale(encoding = "CP1252"),
                     trim_ws = TRUE, skip = 4) %>%
   mutate(
@@ -29,7 +38,13 @@ num2name <- function(x = nummer){
   laender$Name[laender$Land == x]
 }
 
-btw17 <- btw17 %>%
+erst <- erst %>%
+  mutate(
+    # map_chr() runs num2name on every entry of btw17$Land
+    Bundesland = map_chr(Bundesland, num2name)
+  )
+
+zweit <- zweit %>%
   mutate(
     # map_chr() runs num2name on every entry of btw17$Land
     Bundesland = map_chr(Bundesland, num2name)
@@ -37,7 +52,7 @@ btw17 <- btw17 %>%
 
 
 #### aggregate data ####
-btw_long <- btw17 %>%
+erst_long <- erst %>%
   select(Bundesland, `Wahlberechtigte (A)`, `Wähler (B)`, `Ungültige`:`Übrige`) %>%
   gather(key = Partei, value = Stimmen, CDU:`Übrige`) %>%
   group_by(Bundesland, Partei) %>%
@@ -52,15 +67,30 @@ btw_long <- btw17 %>%
   ) %>%
   ungroup()
 
+zweit_long <- zweit %>%
+  select(Bundesland, `Wahlberechtigte (A)`, `Wähler (B)`, `Ungültige`:`V-Partei³`) %>%
+  gather(key = Partei, value = Stimmen, CDU:`V-Partei³`) %>%
+  group_by(Bundesland, Partei) %>%
+  summarise(
+    Prozent = sum(Stimmen) / sum(`Gültige`)
+  ) %>%
+  mutate(Parteien = ifelse(Prozent <= .05, "Sonstige", Partei)) %>%
+  ungroup() %>%
+  group_by(Bundesland, Parteien) %>%
+  summarise(
+    Prozent = sum(Prozent, na.rm = T)
+  ) %>%
+  ungroup()
+
 # Voter turnout by states
-turnout_states <- btw17 %>%
+turnout_states <- erst %>%
   group_by(Bundesland) %>%
   summarise(
     Wahlbeteiligung = sum(`Wähler (B)`) / sum(`Wahlberechtigte (A)`)
   ) %>%
   ungroup()
 
-turnout_dist <- btw17 %>%
+turnout_dist <- erst %>%
   group_by(Wahlkreis) %>%
   summarise(
     Wahlbeteiligung = sum(`Wähler (B)`) / sum(`Wahlberechtigte (A)`)
@@ -80,8 +110,10 @@ ger$Wahlbeteiligung <- turnout_states$Wahlbeteiligung
 
 
 #### write data & maps ####
-saveRDS(btw17, "./data/btw17.rds")
-saveRDS(btw_long, "./data/btw_long.rds")
+saveRDS(erst, "./data/erststimmen.rds")
+saveRDS(zweit, "./data/zweitstimmen.rds")
+saveRDS(erst_long, "./data/erststimmen_long.rds")
+saveRDS(zweit_long, "./data/zweitstimmen_long.rds")
 saveRDS(turnout_states, "./data/turnout_states.rds")
 saveRDS(turnout_dist, "./data/turnout_dist.rds")
 
