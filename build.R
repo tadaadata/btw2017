@@ -11,7 +11,7 @@ cur_user <- Sys.info()[["user"]]
 
 if (cur_user == "Lukas") {
   out_dir <- "~/Sync/public.tadaa-data.de/btw17"
-} else if (cur_user == "Tobi") {
+} else if (cur_user == "tobi") {
   out_dir <- "~/Dokumente/syncthing/public.tadaa-data.de/btw17/"
 } else {
   warning("Don't know who you are, doing nothing")
